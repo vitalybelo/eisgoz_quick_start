@@ -21,9 +21,9 @@
 ##--------------------- SECURITY KEYCLOAK ----------------------------------------------------------------------------
 keycloak.server.url=http://172.29.92.91:8443 ---> это адрес расположения сервера keycloak
 keycloak.realm=IntegrationNewModel ---> это название области используемой для работы
-keycloak.admin=login-admin
-keycloak.client=login-web
-keycloak.client_secret=b6Nuopf9gp6jRRFJ0TTFpD0yaVSZQAJf
+keycloak.admin=login-admin ---> официальный сервис для администрирования
+keycloak.client=login-web ---> здесь будет название вашего сервиса (client)
+keycloak.client_secret=b6Nuopf9gp6jRRFJ0TTFpD0yaVSZQAJf - секрет сервиса администоирования
 
 spring.security.oauth2.client.registration.keycloak.client-id=${keycloak.client}
 spring.security.oauth2.client.registration.keycloak.authorization-grant-type=authorization_code
