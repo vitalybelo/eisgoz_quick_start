@@ -256,6 +256,21 @@ public class AccessTokenService {
 
 
     /**
+     * Выполняет проверку на наличие у пользователя требуемой роли
+     * @param roleString строка требуемой роли
+     * @return true если роль подтверждена, иначе false
+     */
+    public boolean isAllowed(String roleString) {
+        if (assign()) {
+            return getClientRoles()
+                    .stream()
+                    .anyMatch(s -> s.equals(roleString));
+        }
+        return false;
+    }
+
+
+    /**
      * Метод извлекает экземпляр класса авторизации AccessToken из payload токена доступа keycloak.
      * @param tokenString строка с токеном доступа keycloak, без префикса Bearer
      * @return экземпляр класса AccessToken, или null в случае ошибки

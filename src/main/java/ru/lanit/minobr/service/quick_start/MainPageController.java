@@ -53,7 +53,8 @@ public class MainPageController {
         builder.append("Список realm ролей: ").append(service.getRealmRoles().size()).append("<br>");
         builder.append(service.getRealmRoles()).append("<br>");
         builder.append("Список client ролей: ").append(service.getClientRoles().size()).append("<br>");
-        builder.append(service.getClientRoles()).append("<br>");
+        builder.append(service.getClientRoles()).append("<br><br>");
+        builder.append("Проверка наличия роли выполнена \"41041E_4\": ").append(service.isAllowed("41041E_4")).append("<br>");
         builder.append("</h2></p><br>");
 
         builder.append("<br><p><a href=\"/custom_logout\"><h3>выход из приложения</h3></a></p>");
