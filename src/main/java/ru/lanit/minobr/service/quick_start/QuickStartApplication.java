@@ -7,18 +7,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-public class EisgozQuickStartApplication {
+public class QuickStartApplication {
 
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(EisgozQuickStartApplication.class);
+        SpringApplication app = new SpringApplication(QuickStartApplication.class);
         app.setBannerMode(Banner.Mode.OFF);
         app.run(args);
     }
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
 
 }

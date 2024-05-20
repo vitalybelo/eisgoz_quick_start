@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Класс KeycloakLogoutHandler реализует интерфейс LogoutHandler и отправляет запрос на выход в Keycloak.
- * @Author Vitali Belotserkovskii 11.05.2023<br><br>
+ * @author Vitali Belotserkovskii 11.05.2023<br>
  */
 @Slf4j
 @Component

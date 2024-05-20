@@ -1,10 +1,6 @@
 package ru.lanit.minobr.service.quick_start.config;
 
 import org.jetbrains.annotations.NotNull;
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.admin.client.resource.RealmResource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,20 +13,11 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 
 /**
  * Конфигурация класса безопасности, работает для аутентификации через Keycloak (под spring framework 2.18 RELEASE)
- * @Author Vitali Belotserkovskii, 09.10.2023<br><br>
+ * @author Vitali Belotserkovskii, 09.10.2023<br><br>
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Value("${keycloak.admin}")
-    private String clientName;
-    @Value("${keycloak.client_secret}")
-    private String clientSecret;
-    @Value("${keycloak.server.url}")
-    private String serverURL;
-    @Value("${keycloak.realm}")
-    private String realmName;
 
     private final KeycloakLogoutHandler keycloakLogoutHandler;
 
@@ -65,28 +52,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/");
 
         http.oauth2ResourceServer().jwt();
-    }
-
-    @Bean
-    Keycloak keycloak() {
-        return KeycloakBuilder.builder()
-                .serverUrl(serverURL)
-                .realm(realmName)
-                .clientId(clientName)
-                .clientSecret(clientSecret)
-                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-                .build();
-    }
-
-    @Bean
-    public RealmResource realmResource() {
-        return KeycloakBuilder.builder()
-                .serverUrl(serverURL)
-                .realm(realmName)
-                .clientId(clientName)
-                .clientSecret(clientSecret)
-                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-                .build().realm(realmName);
     }
 
 }
