@@ -1,77 +1,75 @@
 package ru.lanit.minobr.service.quick_start;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.lanit.minobr.service.quick_start.authorization.AccessTokenService;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
 import java.util.Date;
+import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Slf4j
-@Hidden
-@RestController
+@RestController("/")
 @RequiredArgsConstructor
 public class MainPageController {
 
+    private final RealmResource realmResource;
 
-    private final AccessTokenService service;
-
-
-    @RequestMapping("/")
-    public String index(Principal principal)
+    @RequestMapping("")
+    public String index(HttpServletRequest request)
     {
-        System.out.println("Класс инициализирован ? >> " + service.assign());
-        System.out.println("Класс инициализирован ? >> " + service.assign(principal));
+        String auth_user = request.getHeader("auth_user");
+        if (auth_user == null) {
+            return "<p><h1>Доступ закрыт</h1></p>";
+        }
+        String user_name = auth_user.substring(0, auth_user.indexOf("@"));
+        String auth_pass = request.getHeader("Authorization");
+        String mac_label = request.getHeader("mymaclabel");
 
         StringBuilder builder;
         builder = new StringBuilder("<p><h1>Index started listening at: ").append(new Date()).append("</h1></p>");
 
         builder.append("<br><p><h2>");
-        builder.append("Пользователь: ").append(service.getLogin()).append("<br><br>");
-        builder.append("Имя: ").append(service.getFirstName()).append("<br>");
-        builder.append("Отчество: ").append(service.getMiddleName()).append("<br>");
-        builder.append("Фамилия: ").append(service.getFamilyName()).append("<br><br>");
-        builder.append("Полное имя: ").append(service.getFullName()).append("<br><br>");
-        builder.append("Подразделение: ").append(service.getDepartment()).append("<br>");
-        builder.append("Должность: ").append(service.getPosition()).append("<br>");
+        builder.append("Пользователь: ").append(auth_user).append("<br>");
+        builder.append("Имя: ").append(user_name).append("<br><br>");
+        builder.append("Mac Label: ").append(mac_label).append("<br><br>");
+        builder.append("Authorization: ").append(auth_pass).append("<br><br>");
+        builder.append("</h2></p>");
 
-        builder.append("Email: ").append(service.getEmail()).append("<br>");
-        builder.append("Phone: ").append(service.getPhone()).append("<br>");
-        builder.append("Разрешенные ip адреса: ").append(service.getIpAddress()).append("<br>");
-        builder.append("Количество разрешенных сессий: ").append(service.getMaxSession()).append("<br>");
-        builder.append("Максимальное время простоя (сек): ").append(service.getMaxIdleTime()).append("<br>");
-        builder.append("Список realm ролей: ").append(service.getRealmRoles().size()).append("<br>");
-        builder.append(service.getRealmRoles()).append("<br>");
-        builder.append("Список client ролей: ").append(service.getClientRoles().size()).append("<br>");
-        builder.append(service.getClientRoles()).append("<br><br>");
-        builder.append("Проверка наличия роли выполнена \"41041E_4\": ").append(service.isAllowed("41041E_4")).append("<br>");
-        builder.append("</h2></p><br>");
-
-        builder.append("<br><p><a href=\"/custom_logout\"><h3>выход из приложения</h3></a></p>");
+        builder.append("<p><a href=\"/api_8080/hello\"><h3>hello page</h3></a></p>");
         return builder.toString();
     }
 
 
-    @SneakyThrows
-    @RequestMapping(value = "/custom_logout", method = {GET, POST})
-    public void custom_logout(@NotNull HttpServletRequest request, HttpServletResponse response)
+    @RequestMapping(value = "hello", method = {GET, POST})
+    public String hello(@NotNull HttpServletRequest request)
     {
-        request.logout();
-        String contextPath = request.getContextPath();
-        if (contextPath == null || contextPath.isEmpty()) {
-            contextPath = "/";
+        String auth_user = request.getHeader("auth_user");
+        String user_name = auth_user.substring(0, auth_user.indexOf("@"));
+
+        StringBuilder sb;
+        sb = new StringBuilder("<p><h1>HELLO, " + user_name + " !<br><br>");
+        List<UserRepresentation> userRepresentationList = realmResource.users().list();
+        if (CollectionUtils.isNotEmpty(userRepresentationList)) {
+            UserRepresentation user = userRepresentationList.stream()
+                    .filter(u -> u.getUsername().equals(user_name))
+                    .findFirst().orElse(null);
+            if (user != null) {
+                sb.append("First Name: ").append(user.getFirstName()).append("<br>");
+                sb.append("Last Name: ").append(user.getLastName()).append("<br>");
+                sb.append("Email: ").append(user.getEmail()).append("<br>");
+            }
         }
-        response.sendRedirect(contextPath);
+        sb.append("</h1></p>");
+        return sb.toString();
     }
 
 
