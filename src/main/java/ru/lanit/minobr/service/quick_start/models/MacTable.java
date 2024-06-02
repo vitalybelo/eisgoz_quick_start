@@ -10,6 +10,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "MACTABLE", schema = "PUBLIC")
 public class MacTable {
 

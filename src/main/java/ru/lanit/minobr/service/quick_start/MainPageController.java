@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.lanit.minobr.service.quick_start.models.MacTable;
+import ru.lanit.minobr.service.quick_start.repository.MacTableJdbcRepository;
 import ru.lanit.minobr.service.quick_start.repository.MacTableRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +40,7 @@ public class MainPageController {
 
     private final RealmResource realmResource;
     private final MacTableRepository repository;
-
+    private final MacTableJdbcRepository jdbcRepository;
 
 
     @RequestMapping("")
@@ -55,7 +57,8 @@ public class MainPageController {
         level = words[0];
         category = words[1];
 
-        macTables = repository.findAll();
+        macTables = jdbcRepository.findAll();
+
         StringBuilder sb;
         sb = new StringBuilder("<p><h1>Index started listening at: ").append(new Date()).append("</h1></p>");
 
