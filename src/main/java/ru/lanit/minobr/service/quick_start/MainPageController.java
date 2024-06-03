@@ -3,9 +3,9 @@ package ru.lanit.minobr.service.quick_start;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.ietf.jgss.*;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +15,7 @@ import ru.lanit.minobr.service.quick_start.repository.MacTableRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -44,8 +45,30 @@ public class MainPageController {
 
 
     @RequestMapping("")
-    public String index(HttpServletRequest request)
-    {
+    public String index(HttpServletRequest request) {
+
+        try {
+            Oid kerberos5Oid = new Oid("1.2.840.113554.1.2.2");
+            GSSManager manager = GSSManager.getInstance();
+            GSSName client = manager.createName("user1@TEST.LAN", GSSName.NT_USER_NAME);
+            GSSName service = manager.createName("postgres/web.test.lan@TEST.LAN", null);
+
+            GSSCredential clientCredentials = manager.createCredential(null, 8*60*60, kerberos5Oid, GSSCredential.INITIATE_ONLY);
+            GSSContext gssContext = manager.createContext(service, kerberos5Oid, clientCredentials, GSSContext.DEFAULT_LIFETIME);
+
+            gssContext.requestCredDeleg(true);
+            gssContext.requestMutualAuth(true);
+            gssContext.requestInteg(true);
+
+            byte[] serviceTicket = gssContext.initSecContext(new byte[0], 0, 0);
+            gssContext.dispose();
+            System.out.println(Arrays.toString(serviceTicket));
+
+        } catch (GSSException e) {
+            log.info("GSSException >>> {}", e.getMessage());
+        }
+
+
         auth_user = request.getHeader("auth_user");
         if (auth_user == null) {
             return "<p><h1>Доступ закрыт</h1></p>";

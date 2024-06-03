@@ -21,8 +21,16 @@ public class SpringJdbcConfig {
 
 
     @Bean
-    public DataSource mysqlDataSource() {
+    public DataSource postgresqlDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
+
+//        System.setProperty("java.security.krb5.conf", "/etc/krb5.conf");
+//        System.setProperty("java.security.krb5.realm", "TEST.LAN");
+//        System.setProperty("sun.security.krb5.debug", "true");
+//        System.setProperty("java.security.krb5.kdc", "server.test.lan");
+//        System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
+//        System.setProperty("java.security.auth.login.config", "/etc/jaas.conf");
+
         dataSource.setDriverClassName(jdbcDriver);
         dataSource.setUrl(jdbcURL);
         dataSource.setUsername(username);
@@ -30,4 +38,5 @@ public class SpringJdbcConfig {
 
         return dataSource;
     }
+
 }
