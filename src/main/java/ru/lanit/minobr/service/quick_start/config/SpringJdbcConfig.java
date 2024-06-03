@@ -21,7 +21,8 @@ public class SpringJdbcConfig {
 
 
     @Bean
-    public DataSource mysqlDataSource() {
+    public DataSource postgresqlDataSource() {
+
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(jdbcDriver);
         dataSource.setUrl(jdbcURL);
@@ -30,4 +31,5 @@ public class SpringJdbcConfig {
 
         return dataSource;
     }
+
 }
