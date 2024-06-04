@@ -2,6 +2,7 @@ package ru.lanit.minobr.service.quick_start.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.lanit.minobr.service.quick_start.models.MacTable;

@@ -3,7 +3,6 @@ package ru.lanit.minobr.service.quick_start;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.ietf.jgss.*;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +13,10 @@ import ru.lanit.minobr.service.quick_start.repository.MacTableJdbcRepository;
 import ru.lanit.minobr.service.quick_start.repository.MacTableRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Timestamp;
-import java.util.Arrays;
+import java.sql.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -47,27 +46,27 @@ public class MainPageController {
     @RequestMapping("")
     public String index(HttpServletRequest request) {
 
+        Properties props = new Properties();
+        props.setProperty("java.security.krb5.conf", "/etc/krb5.conf");
+        //props.setProperty("java.security.krb5.realm", "TEST.LAN");
+        //props.setProperty("java.security.krb5.kdc", "SERVER.TEST.LAN");
+        props.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
+        props.setProperty("java.security.auth.login.config", "/etc/jaas.conf");
+
+
+        Connection conn;
+        String url = "jdbc:postgresql://web.test.lan:5432/test_db";
         try {
-            Oid kerberos5Oid = new Oid("1.2.840.113554.1.2.2");
-            GSSManager manager = GSSManager.getInstance();
-            GSSName client = manager.createName("user1@TEST.LAN", GSSName.NT_USER_NAME);
-            GSSName service = manager.createName("postgres/web.test.lan@TEST.LAN", null);
+            Class.forName("org.postgresql.Driver");
 
-            GSSCredential clientCredentials = manager.createCredential(null, 8*60*60, kerberos5Oid, GSSCredential.INITIATE_ONLY);
-            GSSContext gssContext = manager.createContext(service, kerberos5Oid, clientCredentials, GSSContext.DEFAULT_LIFETIME);
+            conn = DriverManager.getConnection(url, props);
+            DatabaseMetaData data = conn.getMetaData();
+            System.out.println(data.getMaxColumnsInIndex());
 
-            gssContext.requestCredDeleg(true);
-            gssContext.requestMutualAuth(true);
-            gssContext.requestInteg(true);
-
-            byte[] serviceTicket = gssContext.initSecContext(new byte[0], 0, 0);
-            gssContext.dispose();
-            System.out.println(Arrays.toString(serviceTicket));
-
-        } catch (GSSException e) {
-            log.info("GSSException >>> {}", e.getMessage());
+            conn.close();
+        } catch (Exception e) {
+            log.info("CONNECTION >>>> {}", e.getMessage());
         }
-
 
         auth_user = request.getHeader("auth_user");
         if (auth_user == null) {
