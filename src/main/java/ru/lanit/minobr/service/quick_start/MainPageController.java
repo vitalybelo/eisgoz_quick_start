@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,9 +13,10 @@ import ru.lanit.minobr.service.quick_start.repository.MacTableJdbcRepository;
 import ru.lanit.minobr.service.quick_start.repository.MacTableRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -44,8 +44,30 @@ public class MainPageController {
 
 
     @RequestMapping("")
-    public String index(HttpServletRequest request)
-    {
+    public String index(HttpServletRequest request) {
+
+        Properties props = new Properties();
+        props.setProperty("java.security.krb5.conf", "/etc/krb5.conf");
+        //props.setProperty("java.security.krb5.realm", "TEST.LAN");
+        //props.setProperty("java.security.krb5.kdc", "SERVER.TEST.LAN");
+        props.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
+        props.setProperty("java.security.auth.login.config", "/etc/jaas.conf");
+
+
+        Connection conn;
+        String url = "jdbc:postgresql://web.test.lan:5432/test_db";
+        try {
+            Class.forName("org.postgresql.Driver");
+
+            conn = DriverManager.getConnection(url, props);
+            DatabaseMetaData data = conn.getMetaData();
+            System.out.println(data.getMaxColumnsInIndex());
+
+            conn.close();
+        } catch (Exception e) {
+            log.info("CONNECTION >>>> {}", e.getMessage());
+        }
+
         auth_user = request.getHeader("auth_user");
         if (auth_user == null) {
             return "<p><h1>Доступ закрыт</h1></p>";
