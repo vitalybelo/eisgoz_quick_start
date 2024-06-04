@@ -25,11 +25,11 @@ public class MacTableJdbcRepository {
     public List<MacTable> findAll() {
 
         List<Map<String, Object>> list = jdbcTemplate.queryForList(String.format(SELECT_MAC_TABLE, getMacLabels()));
-        return list.stream().map(this::getMacTable).filter(Objects::nonNull).collect(Collectors.toList());
+        return list.stream().map(this::wrapMacTable).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
 
-    private @Nullable MacTable getMacTable(@NotNull Map<String, Object> map) {
+    private @Nullable MacTable wrapMacTable(@NotNull Map<String, Object> map) {
 
         Object uuid = map.get("uuid");
         if (uuid instanceof String) {

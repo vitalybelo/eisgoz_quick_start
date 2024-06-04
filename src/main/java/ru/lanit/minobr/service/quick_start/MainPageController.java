@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.*;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -45,28 +44,6 @@ public class MainPageController {
 
     @RequestMapping("")
     public String index(HttpServletRequest request) {
-
-        Properties props = new Properties();
-        props.setProperty("java.security.krb5.conf", "/etc/krb5.conf");
-        //props.setProperty("java.security.krb5.realm", "TEST.LAN");
-        //props.setProperty("java.security.krb5.kdc", "SERVER.TEST.LAN");
-        props.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
-        props.setProperty("java.security.auth.login.config", "/etc/jaas.conf");
-
-
-        Connection conn;
-        String url = "jdbc:postgresql://web.test.lan:5432/test_db";
-        try {
-            Class.forName("org.postgresql.Driver");
-
-            conn = DriverManager.getConnection(url, props);
-            DatabaseMetaData data = conn.getMetaData();
-            System.out.println(data.getMaxColumnsInIndex());
-
-            conn.close();
-        } catch (Exception e) {
-            log.info("CONNECTION >>>> {}", e.getMessage());
-        }
 
         auth_user = request.getHeader("auth_user");
         if (auth_user == null) {
