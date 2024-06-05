@@ -25,4 +25,5 @@ public interface MacTableRepository extends JpaRepository<MacTable, Timestamp> {
 
 
 
+
 }
